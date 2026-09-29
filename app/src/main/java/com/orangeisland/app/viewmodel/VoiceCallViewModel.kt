@@ -60,7 +60,12 @@ class VoiceCallViewModel(
             resolveVoiceId = { settings.ttsVoiceId.value.ifBlank { null } },
             resolveSttConfig = { resolveSttConfig() },
             resolveSttApiKey = { settings.sttApiKey.value },
-            generateReply = { chatViewModel.generateVoiceReply(it) }
+            generateReply = { userText ->
+    chatViewModel.generateVoiceReply(
+        userText,
+        manager.transcript.value.map { it.speaker to it.text }
+    )
+}
         )
     }
 

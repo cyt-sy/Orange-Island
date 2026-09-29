@@ -512,8 +512,11 @@ class ChatViewModel(
      * the call loop reads the transcript it accumulates, so a single non-tool turn is enough.
      * Returns null on any failure (the caller falls back to a spoken apology).
      */
-    suspend fun generateVoiceReply(userText: String): String? = withContext(Dispatchers.IO) {
-        callLlm(userText)
+    suspend fun generateVoiceReply(
+        userText: String,
+        callHistory: List<Pair<Participant, String>> = emptyList()
+    ): String? = withContext(Dispatchers.IO) {
+        callLlm(userText, callHistory)
     }
 
     /**
@@ -526,7 +529,7 @@ class ChatViewModel(
     }
 
     /** Shared single-turn LLM call for the voice-call feature (no tools, no thinking). */
-    private suspend fun callLlm(prompt: String): String? {
+    private suspend fun callLlm(prompt: String, callHistory: List<Pair<Participant, String>> = emptyList()): String? {
         val model = currentActiveModel.value
         val providerName = providerRegistry.providerForModel(model)
         val provider = runCatching { providerRegistry.getInstance(providerName) }.getOrNull()
@@ -545,10 +548,34 @@ class ChatViewModel(
             thinkingEnabled = false,
             temperature = 0.7f
         )
-        val messages = listOf(ChatMessage(
-            text = prompt,
-            participant = Participant.USER
-        ))
+        val conversationId = _currentConversationId.value
+        val history = if (conversationId != null) {
+            convRepo.getMessagesForConversationSnapshot(conversationId)
+                .filter {
+                    it.participant == Participant.USER || it.participant == Participant.MODEL
+                }
+                .sortedBy { it.timestamp }
+                .map {
+                    ChatMessage(
+                        id = it.id,
+                        parentId = it.parentId,
+                        text = it.text,
+                        participant = it.participant,
+                        timestamp = it.timestamp
+                    )
+                }
+        } else {
+            emptyList()
+        }
+
+        val liveCallHistory = callHistory.map { (speaker, text) ->
+            ChatMessage(
+                text = text,
+                participant = speaker
+            )
+        }
+
+        val messages = history + liveCallHistory
         val sb = StringBuilder()
         var firstError: String? = null
         provider.generateResponse(messages, config).collect { event ->
