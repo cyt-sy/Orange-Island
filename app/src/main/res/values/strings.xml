@@ -1171,6 +1171,8 @@
     <string name="about_download_apk">Download APK</string>
     <string name="about_later">Later</string>
 
+    <string name="rating_privacy">Your rating will be uploaded anonymously to rating.orangeisland.app. Only the fields you provide will be uploaded; no other data will be collected.</string>
+
     <!-- Data Control -->
     <string name="settings_data_control">Data Control</string>
     <string name="settings_data_control_desc">Export or import your data</string>
