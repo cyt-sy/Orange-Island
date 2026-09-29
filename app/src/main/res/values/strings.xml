@@ -1175,6 +1175,17 @@
 
     <string name="rating_category">Rating category</string>
     <string name="about_rating">About rating</string>
+    <string name="about_rating_desc">Help improve Orange-Island by sharing your feedback.</string>
+    <string name="rating_comment">Comment</string>
+    <string name="rating_failed">Failed to submit. Please try again.</string>
+    <string name="rating_star">Star</string>
+    <string name="rating_submit">Submit</string>
+    <string name="rating_submitting">Submitting…</string>
+    <string name="rating_success">Thank you for your feedback!</string>
+    <string name="rating_title">Rate Orange-Island</string>
+    <string name="rating_your_email">Your email</string>
+    <string name="rating_your_name">Your name</string>
+
     <!-- Data Control -->
     <string name="settings_data_control">Data Control</string>
     <string name="settings_data_control_desc">Export or import your data</string>
